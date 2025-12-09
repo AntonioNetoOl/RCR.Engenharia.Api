@@ -16,4 +16,9 @@
     <Folder Include="Services\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\RCR.Engenharia.Sgrh.Application\RCR.Engenharia.Sgrh.Application.csproj" />
+    <ProjectReference Include="..\RCR.Engenharia.Sgrh.Infrastructure\RCR.Engenharia.Sgrh.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
