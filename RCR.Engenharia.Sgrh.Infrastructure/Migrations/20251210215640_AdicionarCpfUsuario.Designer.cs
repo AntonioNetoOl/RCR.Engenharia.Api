@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RCR.Engenharia.Sgrh.Infrastructure.Persistence.Context;
 
@@ -11,9 +12,11 @@ using RCR.Engenharia.Sgrh.Infrastructure.Persistence.Context;
 namespace RCR.Engenharia.Sgrh.Infrastructure.Migrations
 {
     [DbContext(typeof(SgrhDbContext))]
-    partial class SgrhDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251210215640_AdicionarCpfUsuario")]
+    partial class AdicionarCpfUsuario
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -137,9 +140,6 @@ namespace RCR.Engenharia.Sgrh.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("Login")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nome")
                         .IsRequired()
