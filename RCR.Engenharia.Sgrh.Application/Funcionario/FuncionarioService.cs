@@ -1,11 +1,10 @@
-﻿using RCR.Engenharia.Sgrh.Application.Funcionarios;
-using RCR.Engenharia.Sgrh.Domain.Entities;
+﻿using RCR.Engenharia.Sgrh.Domain.Entities;
 using RCR.Engenharia.Sgrh.Domain.Interfaces;
 using RCR.Engenharia.Sgrh.Domain.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace RCR.Engenharia.Sgrh.Application.Funcionarios
@@ -38,10 +37,17 @@ namespace RCR.Engenharia.Sgrh.Application.Funcionarios
 
         public async Task<Guid> CriarAsync(FuncionarioDto dto, CancellationToken cancellationToken = default)
         {
+            // Aqui delegamos as validações de obrigatoriedade para o domínio.
             var funcionario = new Funcionario(
                 nome: dto.Nome,
-                cargo: dto.Cargo,
+                rg: dto.Rg,
+                cpf: dto.Cpf,
+                celular: dto.Celular,
+                email: dto.Email,
                 dataNascimento: dto.DataNascimento,
+                cargo: dto.Cargo,
+                dataAdmissao: dto.DataAdmissao,
+                salario: dto.Salario,
                 ativo: dto.Ativo
             );
 
@@ -50,7 +56,6 @@ namespace RCR.Engenharia.Sgrh.Application.Funcionarios
 
             return funcionario.Id;
         }
-
 
         public async Task AtualizarAsync(Guid id, FuncionarioDto dto, CancellationToken cancellationToken = default)
         {
@@ -61,15 +66,20 @@ namespace RCR.Engenharia.Sgrh.Application.Funcionarios
 
             entity.Atualizar(
                 nome: dto.Nome,
-                cargo: dto.Cargo,
+                rg: dto.Rg,
+                cpf: dto.Cpf,
+                celular: dto.Celular,
+                email: dto.Email,
                 dataNascimento: dto.DataNascimento,
+                cargo: dto.Cargo,
+                dataAdmissao: dto.DataAdmissao,
+                salario: dto.Salario,
                 ativo: dto.Ativo
             );
 
             _funcionarioRepository.Atualizar(entity);
             await _unitOfWork.CommitAsync(cancellationToken);
         }
-
 
         public async Task RemoverAsync(Guid id, CancellationToken cancellationToken = default)
         {
@@ -82,15 +92,53 @@ namespace RCR.Engenharia.Sgrh.Application.Funcionarios
             await _unitOfWork.CommitAsync(cancellationToken);
         }
 
-        private static FuncionarioDto MapToDto(Funcionario entity) =>
-         new()
-         {
-        Id = entity.Id,
-        Nome = entity.Nome,
-        Cargo = entity.Cargo,
-        DataNascimento = entity.DataNascimento,
-        Ativo = entity.Ativo
-         };
+        /// <summary>
+        /// Atualiza a foto do funcionário.
+        /// </summary>
+        public async Task AtualizarFotoAsync(Guid id, byte[] foto, CancellationToken cancellationToken = default)
+        {
+            var entity = await _funcionarioRepository.ObterPorIdAsync(id, cancellationToken);
 
+            if (entity is null)
+                throw new KeyNotFoundException("Funcionário não encontrado.");
+
+            entity.DefinirFoto(foto);
+
+            _funcionarioRepository.Atualizar(entity);
+            await _unitOfWork.CommitAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Remove a foto do funcionário.
+        /// </summary>
+        public async Task RemoverFotoAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            var entity = await _funcionarioRepository.ObterPorIdAsync(id, cancellationToken);
+
+            if (entity is null)
+                throw new KeyNotFoundException("Funcionário não encontrado.");
+
+            entity.RemoverFoto();
+
+            _funcionarioRepository.Atualizar(entity);
+            await _unitOfWork.CommitAsync(cancellationToken);
+        }
+
+        private static FuncionarioDto MapToDto(Funcionario entity) =>
+            new()
+            {
+                Id = entity.Id,
+                Nome = entity.Nome,
+                Cargo = entity.Cargo,
+                Rg = entity.Rg,
+                Cpf = entity.Cpf,
+                Celular = entity.Celular,
+                Email = entity.Email,
+                DataNascimento = entity.DataNascimento,
+                DataAdmissao = entity.DataAdmissao,
+                Salario = entity.Salario,
+                Foto = entity.Foto,
+                Ativo = entity.Ativo
+            };
     }
 }
