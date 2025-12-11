@@ -9,8 +9,9 @@ namespace RCR.Engenharia.Sgrh.Domain.Interfaces
 {
     public interface IUnitOfWork
     {
-        Task CommitAsync(CancellationToken cancellationToken);
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+        
+        Task CommitAsync(CancellationToken cancellationToken = default);
     }
 }
+
 

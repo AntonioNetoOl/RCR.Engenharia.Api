@@ -1,5 +1,4 @@
-﻿// RCR.Engenharia.Sgrh.Infrastructure/Persistence/UnitOfWork.cs
-using RCR.Engenharia.Sgrh.Domain.Interfaces;
+﻿using RCR.Engenharia.Sgrh.Domain.Interfaces;
 using RCR.Engenharia.Sgrh.Infrastructure.Persistence.Context;
 
 namespace RCR.Engenharia.Sgrh.Infrastructure.Persistence
@@ -13,14 +12,9 @@ namespace RCR.Engenharia.Sgrh.Infrastructure.Persistence
             _context = context;
         }
 
-        public Task CommitAsync(CancellationToken cancellationToken)
+        public async Task CommitAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            return _context.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

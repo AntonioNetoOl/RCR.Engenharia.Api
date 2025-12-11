@@ -14,6 +14,8 @@ namespace RCR.Engenharia.Sgrh.Application.Funcionarios
         Task<Guid> CriarAsync(FuncionarioDto dto, CancellationToken cancellationToken = default);
         Task AtualizarAsync(Guid id, FuncionarioDto dto, CancellationToken cancellationToken = default);
         Task RemoverAsync(Guid id, CancellationToken cancellationToken = default);
+        Task AtualizarFotoAsync(Guid id, byte[] foto, CancellationToken cancellationToken = default);
+        Task RemoverFotoAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }
 
