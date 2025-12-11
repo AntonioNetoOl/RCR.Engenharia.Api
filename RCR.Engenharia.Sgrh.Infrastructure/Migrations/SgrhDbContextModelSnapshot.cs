@@ -22,79 +22,231 @@ namespace RCR.Engenharia.Sgrh.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            // ===========================
+            // Tabela de junção Perfil x Permissao
+            // ===========================
+            modelBuilder.Entity("PerfilPermissao", b =>
+            {
+                b.Property<Guid>("PerfisId")
+                    .HasColumnType("uniqueidentifier");
+
+                b.Property<Guid>("PermissoesId")
+                    .HasColumnType("uniqueidentifier");
+
+                b.HasKey("PerfisId", "PermissoesId");
+
+                b.HasIndex("PermissoesId");
+
+                b.ToTable("PerfilPermissoes");
+            });
+
+            // ===========================
+            // Funcionario
+            // ===========================
             modelBuilder.Entity("RCR.Engenharia.Sgrh.Domain.Entities.Funcionario", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id");
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uniqueidentifier")
+                    .HasColumnName("id");
 
-                    b.Property<bool>("Ativo")
-                        .HasColumnType("bit")
-                        .HasColumnName("ativo");
+                b.Property<bool>("Ativo")
+                    .HasColumnType("bit")
+                    .HasColumnName("ativo");
 
-                    b.Property<DateTime?>("AtualizadoEm")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("atualizado_em");
+                b.Property<DateTime?>("AtualizadoEm")
+                    .HasColumnType("datetime2")
+                    .HasColumnName("atualizado_em");
 
-                    b.Property<string>("Cargo")
-                        .HasMaxLength(120)
-                        .HasColumnType("nvarchar(120)")
-                        .HasColumnName("cargo");
+                b.Property<string>("Cargo")
+                    .HasMaxLength(120)
+                    .HasColumnType("nvarchar(120)")
+                    .HasColumnName("cargo");
 
-                    b.Property<string>("Celular")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasColumnName("celular");
+                b.Property<string>("Celular")
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .HasColumnType("nvarchar(20)")
+                    .HasColumnName("celular");
 
-                    b.Property<string>("Cpf")
-                        .IsRequired()
-                        .HasMaxLength(14)
-                        .HasColumnType("nvarchar(14)")
-                        .HasColumnName("cpf");
+                b.Property<string>("Cpf")
+                    .IsRequired()
+                    .HasMaxLength(14)
+                    .HasColumnType("nvarchar(14)")
+                    .HasColumnName("cpf");
 
-                    b.Property<DateTime>("CriadoEm")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("criado_em");
+                b.Property<DateTime>("CriadoEm")
+                    .HasColumnType("datetime2")
+                    .HasColumnName("criado_em");
 
-                    b.Property<DateTime?>("DataAdmissao")
-                        .HasColumnType("date")
-                        .HasColumnName("data_admissao");
+                b.Property<DateTime?>("DataAdmissao")
+                    .HasColumnType("date")
+                    .HasColumnName("data_admissao");
 
-                    b.Property<DateTime>("DataNascimento")
-                        .HasColumnType("date")
-                        .HasColumnName("data_nascimento");
+                b.Property<DateTime>("DataNascimento")
+                    .HasColumnType("date")
+                    .HasColumnName("data_nascimento");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)")
-                        .HasColumnName("email");
+                b.Property<string>("Email")
+                    .IsRequired()
+                    .HasMaxLength(150)
+                    .HasColumnType("nvarchar(150)")
+                    .HasColumnName("email");
 
-                    b.Property<byte[]>("Foto")
-                        .HasColumnType("varbinary(max)")
-                        .HasColumnName("foto");
+                b.Property<byte[]>("Foto")
+                    .HasColumnType("varbinary(max)")
+                    .HasColumnName("foto");
 
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)")
-                        .HasColumnName("nome");
+                b.Property<string>("Nome")
+                    .IsRequired()
+                    .HasMaxLength(150)
+                    .HasColumnType("nvarchar(150)")
+                    .HasColumnName("nome");
 
-                    b.Property<string>("Rg")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasColumnName("rg");
+                b.Property<string>("Rg")
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .HasColumnType("nvarchar(20)")
+                    .HasColumnName("rg");
 
-                    b.Property<decimal?>("Salario")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("salario");
+                b.Property<decimal?>("Salario")
+                    .HasColumnType("decimal(18,2)")
+                    .HasColumnName("salario");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("funcionarios", "dbo");
-                });
+                b.ToTable("funcionarios", "dbo");
+            });
+
+            // ===========================
+            // Perfil
+            // ===========================
+            modelBuilder.Entity("RCR.Engenharia.Sgrh.Domain.Entities.Perfil", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
+
+                b.Property<string>("Descricao")
+                    .HasColumnType("nvarchar(max)");
+
+                b.Property<bool>("EhAdmin")
+                    .HasColumnType("bit");
+
+                b.Property<string>("Nome")
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasColumnType("nvarchar(100)");
+
+                b.HasKey("Id");
+
+                b.ToTable("Perfis");
+            });
+
+            // ===========================
+            // Permissao
+            // ===========================
+            modelBuilder.Entity("RCR.Engenharia.Sgrh.Domain.Entities.Permissao", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
+
+                b.Property<string>("Grupo")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
+
+                b.Property<string>("Nome")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
+
+                b.Property<string>("Slug")
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasColumnType("nvarchar(100)");
+
+                b.HasKey("Id");
+
+                b.HasIndex("Slug")
+                    .IsUnique();
+
+                b.ToTable("Permissoes");
+            });
+
+            // ===========================
+            // Usuario
+            // ===========================
+            modelBuilder.Entity("RCR.Engenharia.Sgrh.Domain.Entities.Usuario", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
+
+                b.Property<string>("Cpf")
+                    .HasColumnType("nvarchar(max)");
+
+                b.Property<string>("Email")
+                    .IsRequired()
+                    .HasMaxLength(150)
+                    .HasColumnType("nvarchar(150)")
+                    .HasColumnName("email");
+
+                b.Property<string>("Login")
+                    .HasColumnType("nvarchar(max)");
+
+                b.Property<string>("Nome")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
+
+                b.Property<Guid>("PerfilId")
+                    .HasColumnType("uniqueidentifier");
+
+                b.Property<string>("SenhaHash")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
+
+                b.HasKey("Id");
+
+                b.HasIndex("Email")
+                    .IsUnique();
+
+                b.HasIndex("PerfilId");
+
+                b.ToTable("Usuarios");
+            });
+
+            // ===========================
+            // Relacionamentos
+            // ===========================
+            modelBuilder.Entity("PerfilPermissao", b =>
+            {
+                b.HasOne("RCR.Engenharia.Sgrh.Domain.Entities.Perfil", null)
+                    .WithMany()
+                    .HasForeignKey("PerfisId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.HasOne("RCR.Engenharia.Sgrh.Domain.Entities.Permissao", null)
+                    .WithMany()
+                    .HasForeignKey("PermissoesId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
+
+            modelBuilder.Entity("RCR.Engenharia.Sgrh.Domain.Entities.Usuario", b =>
+            {
+                b.HasOne("RCR.Engenharia.Sgrh.Domain.Entities.Perfil", "Perfil")
+                    .WithMany("Usuarios")
+                    .HasForeignKey("PerfilId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
+
+                b.Navigation("Perfil");
+            });
+
+            modelBuilder.Entity("RCR.Engenharia.Sgrh.Domain.Entities.Perfil", b =>
+            {
+                b.Navigation("Usuarios");
+            });
 #pragma warning restore 612, 618
         }
     }
