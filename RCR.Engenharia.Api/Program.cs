@@ -1,24 +1,86 @@
-using RCR.Engenharia.Sgrh.Application.Funcionarios;
-using RCR.Engenharia.Sgrh.Infrastructure.DependencyInjection;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using RCR.Engenharia.Api.Services;
+using RCR.Engenharia.Sgrh.Application.Extensions;      // <--- Novo Using
+using RCR.Engenharia.Sgrh.Infrastructure.Extensions;   // <--- Novo Using
+using RCR.Engenharia.Sgrh.Infrastructure.Persistence;
+using RCR.Engenharia.Sgrh.Infrastructure.Persistence.Context;
+using System.Text;
+using RCR.Engenharia.Sgrh.Infrastructure.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// ==================================================================
+// 1. REGISTRO DE SERVIÇOS (ORGANIZADO)
+// ==================================================================
+
+// A. Serviços Básicos da API
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+});
 
-// >>> REGISTROS DA CAMADA DE INFRA E APPLICATION <<<
+// B. Camadas da Arquitetura (Aqui está a mágica da limpeza!)
+// O Program.cs não precisa mais saber QUAL service ou repository existe.
+builder.Services.AddApplicationServices();
+builder.Services.AddInfrastructureServices(builder.Configuration);
 
-// Infra: DbContext, Reposit�rios, UnitOfWork (usa a connection string)
-builder.Services.AddInfrastructure(builder.Configuration);
+// C. Serviço de Token da API
+builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<PasswordHashService>();
 
-// Application: service de funcion�rio
-builder.Services.AddScoped<IFuncionarioService, FuncionarioService>();
+// D. Configuração de Segurança (JWT)
+var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]!);
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(x =>
+{
+    x.RequireHttpsMetadata = false;
+    x.SaveToken = true;
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"]
+    };
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// ==================================================================
+// 2. INICIALIZAÇÃO DO BANCO (SEED)
+// ==================================================================
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<SgrhDbContext>();
+        await DbInitializer.InitializeAsync(context);
+
+        // Dica: Use Console.WriteLine se o logger der muito trabalho no debug
+        Console.WriteLine("✅ Banco de dados sincronizado!");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Erro no banco: {ex.Message}");
+    }
+}
+
+// ==================================================================
+// 3. PIPELINE HTTP
+// ==================================================================
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -26,8 +88,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors();
 
-app.UseAuthorization();
+app.UseAuthentication(); // 1º Quem é você?
+app.UseAuthorization();  // 2º O que você pode fazer?
 
 app.MapControllers();
 
